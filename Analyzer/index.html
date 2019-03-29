@@ -1,0 +1,155 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block main %}
+<p> Door op whitelist/blacklist te klikken kunt u de whitelist/blacklist zien. </p>
+<p> Hieronder volgt een overzicht van de bestanden in de dummy folder:
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" type="text/javascript">
+</script>
+
+<head>
+<link href="/static/style.css" rel="stylesheet"/>
+</head>
+<body>
+ <style>
+            #container{
+                margin:0 auto;
+                width:80%;
+                overflow:auto;
+            }
+            table.gridtable {
+                margin:0 auto;
+                width:95%;
+                overflow:auto;
+                font-family: helvetica,arial,sans-serif;
+                font-size:14px;
+                color:#333333;
+                border-width: 1px;
+                border-color: #666666;
+                border-collapse: collapse;
+                text-align: center;
+            }
+            table.gridtable th {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #666666;
+                background-color: #F6B4A5;
+            }
+            table.gridtable td {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #666666;
+            }
+            .error {
+                color: white;
+                background-color: red;
+            }
+        </style>
+</head>
+
+<body>
+
+    <div class="container" id="container">
+        <table class="gridtable">
+            <thead>
+                <tr>
+                    <th>column 1</th>
+                    <th>column 2</th>
+                    <th>column 3</th>
+                    <th>column 4</th>
+                     <th>column 5</th>
+                </tr>
+            </thead>
+			<?
+           $seperator = $_POST['seperator'];
+$escape = $_POST['escape'];
+$default_val = $_POST['default_val'];
+$files = $_FILES['filesToUpload']['name'];
+$files_array = array();
+//no files selected
+if ($files[0] == "") {
+    echo "You have to select at least 1 file";
+    exit();
+}
+//preprocess by creating an array per file with it's path and name
+$count = 0;
+foreach ($files as $file) {
+        $current_file = array();
+        $current_file['name'] = $file;
+        $current_file['path'] = $_FILES['filesToUpload']['tmp_name'][$count];
+        $files_array[$file] = $current_file;
+        ++$count;
+}
+
+$translation_array = array();
+$languages = array();
+foreach ($files_array as $file_key => $file_value) {
+    $text_file = file($file_value['path']);
+    $languages[] = $file_value['name'];
+
+    foreach ($text_file as $line_number => $line) {
+        $line = rtrim($line, "\n");
+        $line_parts = explode('=', $line);
+        $translation_key = $line_parts[0];
+        if ($file_value['name'] != 'brndportal.properties') {
+            $translation_array[$translation_key][$file_value['name']] = $line_parts[1];
+        } else {
+            $translation_array[$translation_key][$file_value['name']] = $line_parts[0];
+        }
+    }
+}
+
+$translation_csv = fopen("C:/myproject/logger/checksums_archive.csv", "w") or die("Unable to open file!");
+
+//headers
+$txt = "key" . $seperator;
+foreach ($files as $file) {
+    $txt .= $file . $seperator;
+}
+
+$txt .= "\n";
+fwrite($translation_csv, $txt);
+
+//translations
+foreach ($translation_array as $translation_key => $translation_arr) {
+
+    if (array_key_exists('brndportal.properties', $translation_array[$translation_key])) {
+        $txt = '';
+        $txt .= $translation_key . $seperator;
+
+        foreach ($languages as $language) {
+            if(array_key_exists($language, $translation_arr)) {
+                $translation_value = $translation_arr[$language];
+            }
+            else {
+                $translation_value = $default_val;
+            }
+            if (strpos($translation_value, $seperator) !== false) {
+                $translation_value = $escape . $translation_value . $escape;
+            }
+
+            $txt .= $translation_value . $seperator;
+        }
+
+        $txt .= "\n";
+        fwrite($translation_csv, $txt);
+    }
+}
+fclose($translation_csv);
+?>        
+           </table>
+    </div>
+
+
+    </body>
+</html>
+
+      
+     
+{% endblock %}
+
