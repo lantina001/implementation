@@ -1,0 +1,9 @@
+filename; directory; file_hash;timestamp
+;;;
+Implementation1.txt;C:/myproject/scanner/dummy_folder;c06db68e819be6ec3d26c6038d8e8d1f;Wed Apr  3 20:48:43 2019
+;;;
+Implementation2.txt;C:/myproject/scanner/dummy_folder;837890a61cf371307127d32ce8efe45f;Thu Apr  4 11:40:35 2019
+;;;
+Test12.txt;C:/myproject/scanner/dummy_folder;2c9341ca4cf3d87b9e4eb905d6a3ec45;Tue Mar 26 20:18:48 2019
+;;;
+Test123.txt;C:/myproject/scanner/dummy_folder;9a07230b010b84859def793f9e2a59bc;Thu Apr  4 11:58:18 2019
